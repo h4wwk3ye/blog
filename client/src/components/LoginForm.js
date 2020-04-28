@@ -1,25 +1,29 @@
-import React, { useState } from 'react'
-import loginService from '../services/login'
+import React from 'react'
 import blogService from '../services/blogs'
+import PropTypes from 'prop-types'
+import { login } from '../reducers/userReducer'
+import { useDispatch, useSelector } from 'react-redux'
 
-export default function LoginForm({ setUser, setErrorMessage }) {
-  const [username, setUsername] = useState('')
-  const [password, setPassword] = useState('')
+const LoginForm = ({ setUser, setErrorMessage }) => {
+  const dispatch = useDispatch()
+  const user = useSelector(state => state)
 
   const handleSubmit = async (event) => {
     event.preventDefault()
+    const username = event.target.username.value
+    const password = event.target.password.value
+    // console.log(username, password)
     try {
-      const user = await loginService.login({
-        username, password
-      })
+
+      dispatch(login({ username, password }))
+      // console.log(user)
+
+      if (user === undefined) throw new Error()
 
       window.localStorage.setItem(
         'loggedInUser', JSON.stringify(user)
       )
       blogService.setToken(user.token)
-      setUser(user)
-      setUsername('')
-      setPassword('')
     } catch (error) {
       setErrorMessage("Wrong Credentials")
       setTimeout(() => {
@@ -37,8 +41,6 @@ export default function LoginForm({ setUser, setErrorMessage }) {
           username
           <input
             name="username"
-            value={username}
-            onChange={({ target }) => setUsername(target.value)}
           />
         </div>
         <div>
@@ -46,8 +48,6 @@ export default function LoginForm({ setUser, setErrorMessage }) {
           <input
             type="password"
             name="password"
-            value={password}
-            onChange={({ target }) => setPassword(target.value)}
           />
         </div>
         <button type="submit">login</button>
@@ -55,3 +55,9 @@ export default function LoginForm({ setUser, setErrorMessage }) {
     </div>
   )
 }
+
+LoginForm.propTypes = {
+  handleSubmit: PropTypes.func.isRequired,
+}
+
+export default LoginForm

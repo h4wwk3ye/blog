@@ -7,10 +7,12 @@ import Notification from './components/Notification'
 import Togglable from './components/Togglable'
 
 import blogService from './services/blogs'
-
+import { useDispatch, useSelector } from 'react-redux'
+import { alreadyLoggedIn, logOut } from './reducers/userReducer'
 
 function App() {
-  const [user, setUser] = useState(null)
+  const dispatch = useDispatch()
+  const user = useSelector(state => state)
   const [blogs, setBlogs] = useState([])
   const [errorMessage, setErrorMessage] = useState(null)
 
@@ -36,15 +38,16 @@ function App() {
     const loggedUserJSON = window.localStorage.getItem('loggedInUser')
     if (loggedUserJSON) {
       const user = JSON.parse(loggedUserJSON)
-      setUser(user)
+      // setUser(user)
+      dispatch(alreadyLoggedIn(user))
       blogService.setToken(user.token)
     }
-  }, [])
+  })
 
   const handleLogout = (event) => {
     event.preventDefault()
     window.localStorage.clear()
-    setUser(null)
+    dispatch(logOut())
   }
 
   const addBlog = async newBlog => {
@@ -77,8 +80,8 @@ function App() {
       </div>
       <div>
         {
-          user === null ?
-            <LoginForm setUser={setUser} setErrorMessage={setErrorMessage} /> :
+          user === undefined ?
+            <LoginForm setErrorMessage={setErrorMessage} /> :
             <div>
               <h2>Blogs</h2>
               <p>{user.name} logged in</p>
