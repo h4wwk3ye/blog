@@ -4,26 +4,16 @@ import PropTypes from 'prop-types'
 import { login } from '../reducers/userReducer'
 import { useDispatch, useSelector } from 'react-redux'
 
-const LoginForm = ({ setUser, setErrorMessage }) => {
+const LoginForm = ({ user, setErrorMessage }) => {
   const dispatch = useDispatch()
-  const user = useSelector(state => state)
 
   const handleSubmit = async (event) => {
     event.preventDefault()
     const username = event.target.username.value
     const password = event.target.password.value
-    // console.log(username, password)
+
     try {
-
-      dispatch(login({ username, password }))
-      // console.log(user)
-
-      if (user === undefined) throw new Error()
-
-      window.localStorage.setItem(
-        'loggedInUser', JSON.stringify(user)
-      )
-      blogService.setToken(user.token)
+      await dispatch(login({ username, password }))
     } catch (error) {
       setErrorMessage("Wrong Credentials")
       setTimeout(() => {

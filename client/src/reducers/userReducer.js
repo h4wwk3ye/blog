@@ -1,25 +1,30 @@
 import loginService from '../services/login'
 
-const userReducer = (state = null, action) => {
+const initialState = null
+
+const userReducer = (state = initialState, action) => {
   switch (action.type) {
     case 'LOGIN':
       return action.payload
-    case 'ALREADY_LOGGED_IN':
-      return action.payload
     case 'LOG_OUT':
-      return null
+      return initialState
     default:
-      break;
+      return state;
   }
 }
 
 export const login = ({ username, password }) => {
   return async dispatch => {
-    const newUser = await loginService.login({ username, password })
-    dispatch({
-      type: 'LOGIN',
-      payload: newUser
-    })
+    try {
+      const newUser = await loginService.login({ username, password })
+      dispatch({
+        type: 'LOGIN',
+        payload: newUser
+      })
+    } catch (error) {
+      throw new Error(error)
+    }
+
   }
 }
 

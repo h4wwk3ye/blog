@@ -39,7 +39,7 @@ export default function Blogs({ blog, increaseLike, removeBlog, user }) {
         <div>likes {blog.likes} <button onClick={handleLike}>like</button> </div>
         <div>{blog.author}</div>
         {
-          user.id.toString() === blog.user.id.toString() ?
+          user.id.toString() === blog.user.toString() ?
             <button onClick={handleRemove}>remove</button>
             : null
         }

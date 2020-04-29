@@ -8,17 +8,16 @@ import Togglable from './components/Togglable'
 
 import blogService from './services/blogs'
 import { useDispatch, useSelector } from 'react-redux'
-import { alreadyLoggedIn, logOut } from './reducers/userReducer'
+import { logOut } from './reducers/userReducer'
 
 function App() {
   const dispatch = useDispatch()
   const user = useSelector(state => state)
   const [blogs, setBlogs] = useState([])
   const [errorMessage, setErrorMessage] = useState(null)
-
   const newBlogRef = React.createRef()
 
-  // for initalising blogs
+
   useEffect(() => {
     let isMounted = true
     async function fetchBlogs() {
@@ -35,11 +34,7 @@ function App() {
 
   // for setting user 
   useEffect(() => {
-    const loggedUserJSON = window.localStorage.getItem('loggedInUser')
-    if (loggedUserJSON) {
-      const user = JSON.parse(loggedUserJSON)
-      // setUser(user)
-      dispatch(alreadyLoggedIn(user))
+    if (user.token) {
       blogService.setToken(user.token)
     }
   })
@@ -80,8 +75,8 @@ function App() {
       </div>
       <div>
         {
-          user === undefined ?
-            <LoginForm setErrorMessage={setErrorMessage} /> :
+          user.token === undefined ?
+            <LoginForm user={user} setErrorMessage={setErrorMessage} /> :
             <div>
               <h2>Blogs</h2>
               <p>{user.name} logged in</p>

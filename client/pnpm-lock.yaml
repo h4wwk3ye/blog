@@ -11,6 +11,7 @@ dependencies:
   react-scripts: 3.4.1
   redux: 4.0.5
   redux-devtools-extension: 2.13.8_redux@4.0.5
+  redux-persist: 6.0.0_redux@4.0.5
   redux-thunk: 2.3.0
 lockfileVersion: 5.1
 packages:
@@ -9406,6 +9407,14 @@ packages:
       redux: ^3.1.0 || ^4.0.0
     resolution:
       integrity: sha512-8qlpooP2QqPtZHQZRhx3x3OP5skEV1py/zUdMY28WNAocbafxdG2tRD1MWE7sp8obGMNYuLWanhhQ7EQvT1FBg==
+  /redux-persist/6.0.0_redux@4.0.5:
+    dependencies:
+      redux: 4.0.5
+    dev: false
+    peerDependencies:
+      redux: '>4.0.0'
+    resolution:
+      integrity: sha512-71LLMbUq2r02ng2We9S215LtPu3fY0KgaGE0k8WRgl6RkqxtGfl7HUozz1Dftwsb0D/5mZ8dwAaPbtnzfvbEwQ==
   /redux-thunk/2.3.0:
     dev: false
     resolution:
@@ -11618,4 +11627,5 @@ specifiers:
   react-scripts: 3.4.1
   redux: ^4.0.5
   redux-devtools-extension: ^2.13.8
+  redux-persist: ^6.0.0
   redux-thunk: ^2.3.0
