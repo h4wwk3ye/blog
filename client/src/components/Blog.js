@@ -1,14 +1,7 @@
 import React, { useState } from 'react'
+import { Button } from 'react-bootstrap'
 
 export default function Blogs({ blog, increaseLike, removeBlog, user }) {
-  const blogStyle = {
-    paddingTop: 10,
-    paddingLeft: 2,
-    border: 'solid',
-    borderWidth: 1,
-    marginBottom: 5
-  }
-
   const [visible, setVisible] = useState(false)
 
   const handleClick = (event) => {
@@ -28,23 +21,32 @@ export default function Blogs({ blog, increaseLike, removeBlog, user }) {
 
   return (
     !visible ?
-      <div style={blogStyle}>
-        {blog.title} {blog.author}
-        <button onClick={handleClick}>view</button>
-      </div>
+      <tbody>
+        <tr>
+          <td>{blog.title}></td>
+          <td>{blog.author}</td>
+          <td> <Button onClick={handleClick}>view</Button></td>
+        </tr>
+      </tbody>
       :
-      <div style={blogStyle}>
-        <div>{blog.title} <button onClick={handleClick}>hide</button> </div>
-        <div>{blog.url}</div>
-        <div>likes {blog.likes} <button onClick={handleLike}>like</button> </div>
-        <div>{blog.author}</div>
-        {
-          user.id.toString() === blog.user.toString() ?
-            <button onClick={handleRemove}>remove</button>
-            : null
-        }
+      <tbody>
+        <tr>
+          <td>{blog.title} </td>
 
-      </div>
+          <td><Button onClick={handleClick}>hide<br /></Button></td>
 
+          <td>{blog.url}</td>
+
+          <td> likes </td><td>{blog.likes}</td>
+          <td><Button onClick={handleLike}>like</Button></td>
+
+          <td>{blog.author}</td>
+          {
+            user.id.toString() === blog.user.id.toString() ?
+              <td><Button onClick={handleRemove}>remove</Button></td>
+              : null
+          }
+        </tr>
+      </tbody>
   )
 }

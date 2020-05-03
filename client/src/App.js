@@ -1,43 +1,51 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import './App.css';
+
 import LoginForm from './components/LoginForm'
 import Blog from './components/Blog'
 import NewBlog from './components/NewBlog'
 import Notification from './components/Notification'
 import Togglable from './components/Togglable'
+import Users from './components/Users'
 
 import blogService from './services/blogs'
 import { useDispatch, useSelector } from 'react-redux'
-import { logOut } from './reducers/userReducer'
+import { logOut } from './reducers/authReducer'
+
+import { getAllBlogs, like, addnew, remove } from './reducers/blogReducer'
+
+import { Table } from 'react-bootstrap'
+
+import { Button } from 'react-bootstrap'
 
 function App() {
   const dispatch = useDispatch()
-  const user = useSelector(state => state)
-  const [blogs, setBlogs] = useState([])
-  const [errorMessage, setErrorMessage] = useState(null)
-  const newBlogRef = React.createRef()
 
+  const user = useSelector(state => state.user)
+  // const [blogs, setBlogs] = useState([])
+  const blogs = useSelector(state => state.blogs)
+
+  const errorMessage = useSelector(state => state.notification)
+  const newBlogRef = React.createRef()
 
   useEffect(() => {
     let isMounted = true
     async function fetchBlogs() {
-      let blogs = await blogService.getAll()
-
-      blogs = blogs.sort((a, b) => parseInt(b.likes) - parseInt(a.likes))
-      if (isMounted) setBlogs(blogs)
+      if (isMounted)
+        await dispatch(getAllBlogs())
     }
     fetchBlogs()
     return function cleanup() {
       isMounted = false
     }
-  }, [])
+  }, [dispatch])
 
-  // for setting user 
+  // for setting user token
   useEffect(() => {
-    if (user.token) {
+    if (user && user.token) {
       blogService.setToken(user.token)
     }
-  })
+  }, [user])
 
   const handleLogout = (event) => {
     event.preventDefault()
@@ -47,26 +55,19 @@ function App() {
 
   const addBlog = async newBlog => {
     newBlogRef.current.toggleVisibility()
-    const blog = await blogService.create(newBlog)
-    setBlogs([...blogs, blog])
+    await dispatch(addnew(newBlog))
   }
 
   const increaseLike = async blog => {
-    const newBlog = await blogService.update(blog)
-    const newBlogs = blogs.map(blog => blog.id === newBlog.id ? newBlog : blog)
-    setBlogs(newBlogs)
+    await dispatch(like(blog))
   }
 
   const removeBlog = async blog => {
-    if (window.confirm(`You want to delete ${blog.title}`)) {
-      await blogService.remove(blog)
-      const blogs = await blogService.getAll()
-      setBlogs(blogs)
-    }
+    await dispatch(remove(blog))
   }
 
   return (
-    <div>
+    <div className='container'>
       <div>
         {errorMessage ?
           <Notification message={errorMessage} /> :
@@ -75,28 +76,32 @@ function App() {
       </div>
       <div>
         {
-          user.token === undefined ?
-            <LoginForm user={user} setErrorMessage={setErrorMessage} /> :
+          !user || user.token === undefined ?
+            <LoginForm /> :
             <div>
               <h2>Blogs</h2>
               <p>{user.name} logged in</p>
-              <div>
-                {blogs.map(blog => <Blog
-                  key={blog.id}
-                  blog={blog}
-                  increaseLike={increaseLike}
-                  removeBlog={removeBlog}
-                  user={user}
-                />)}
-              </div>
+              <Table responsive>
+
+                {blogs && blogs.map(blog =>
+                  <Blog
+                    key={blog.id}
+                    blog={blog}
+                    increaseLike={increaseLike}
+                    removeBlog={removeBlog}
+                    user={user}
+                  />)}
+
+              </Table>
               <Togglable buttonLabel='Creat new' ref={newBlogRef}>
                 <NewBlog addBlog={addBlog} />
               </Togglable>
 
-              <button onClick={handleLogout}>Log out</button>
+              <Button onClick={handleLogout}>Log out</Button>
             </div>
         }
       </div>
+      <Users />
     </div>
   )
 }

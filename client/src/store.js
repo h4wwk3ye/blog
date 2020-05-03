@@ -1,23 +1,30 @@
-import { createStore, combineReducers, applyMiddleware } from 'redux'
+import { createStore, applyMiddleware, combineReducers } from 'redux'
 import thunk from 'redux-thunk'
 import { composeWithDevTools } from 'redux-devtools-extension'
-import userReducer from './reducers/userReducer'
+
+import userReducer from './reducers/authReducer'
+import notificationReducer from './reducers/notificationReducer'
+import blogReducer from './reducers/blogReducer'
 
 import { persistStore, persistReducer } from 'redux-persist'
 import storage from 'redux-persist/lib/storage' // defaults to localStorage for web
-
-const reducer = userReducer
 
 const persistConfig = {
   key: 'loggedInUser',
   storage,
 }
 
-const persistedReducer = persistReducer(persistConfig, reducer)
+const rootReducer = combineReducers({
+  user: persistReducer(persistConfig, userReducer),
+  notification: notificationReducer,
+  blogs: blogReducer
+})
+
+// const persistCombinedReducers = persistCombineReducers(persistConfig, rootReducer);
 
 export default () => {
   let store = createStore(
-    persistedReducer,
+    rootReducer,
     composeWithDevTools(
       applyMiddleware(thunk)
     )

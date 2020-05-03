@@ -1,10 +1,11 @@
 import React from 'react'
-import blogService from '../services/blogs'
 import PropTypes from 'prop-types'
-import { login } from '../reducers/userReducer'
-import { useDispatch, useSelector } from 'react-redux'
+import { login } from '../reducers/authReducer'
+import { useDispatch } from 'react-redux'
 
-const LoginForm = ({ user, setErrorMessage }) => {
+import { display, clear } from '../reducers/notificationReducer'
+
+const LoginForm = () => {
   const dispatch = useDispatch()
 
   const handleSubmit = async (event) => {
@@ -12,14 +13,15 @@ const LoginForm = ({ user, setErrorMessage }) => {
     const username = event.target.username.value
     const password = event.target.password.value
 
+    event.target.username.value = ''
+
     try {
       await dispatch(login({ username, password }))
     } catch (error) {
-      setErrorMessage("Wrong Credentials")
+      dispatch(display("Wrong Credentials"))
       setTimeout(() => {
-        setErrorMessage(null)
+        dispatch(clear())
       }, 5000);
-
     }
   }
 
